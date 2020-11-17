@@ -43,9 +43,9 @@ class View():
         # Background
         self.screen.fill((0, 0, 0))
 
-        # Draw origin
-        if self._isInCamera(Vec2()):
-            self._drawOrigin()
+        self._drawOrigin()
+
+        self._drawCenterOfMass(universe.planets)
 
         # Draw all planets
         sorted_planets = sorted(universe.planets, key=lambda p: p.pos.z)
@@ -76,19 +76,47 @@ class View():
 
     def _drawOrigin(self):
         """Draw a cross on the origin of the coordinate system"""
-        origin_screen = self._posToScreenCoords(Vec2())
+        screen_coords = self._posToScreenCoords(Vec2())
+
+        if not self._isInScreen(screen_coords):
+            return
 
         pygame.draw.line(
             self.screen,
             (150, 150, 150),
-            (origin_screen[0] - 3, origin_screen[1]),
-            (origin_screen[0] + 3, origin_screen[1]),
+            (screen_coords[0] - 3, screen_coords[1]),
+            (screen_coords[0] + 3, screen_coords[1]),
         )
         pygame.draw.line(
             self.screen,
             (150, 150, 150),
-            (origin_screen[0], origin_screen[1] - 3),
-            (origin_screen[0], origin_screen[1] + 3),
+            (screen_coords[0], screen_coords[1] - 3),
+            (screen_coords[0], screen_coords[1] + 3),
+        )
+
+    def _drawCenterOfMass(self, planets):
+        """Draw a cross on the center of mass of the planets"""
+        center_of_mass = planets[0].mass * planets[0].pos
+        for p in planets[1:]:
+            center_of_mass += p.mass * p.pos
+        center_of_mass /= sum([p.mass for p in planets])
+
+        screen_coords = self._posToScreenCoords(center_of_mass)
+
+        if not self._isInScreen(screen_coords):
+            return
+
+        pygame.draw.line(
+            self.screen,
+            (200, 100, 100),
+            (screen_coords[0] - 3, screen_coords[1]),
+            (screen_coords[0] + 3, screen_coords[1]),
+        )
+        pygame.draw.line(
+            self.screen,
+            (200, 100, 100),
+            (screen_coords[0], screen_coords[1] - 3),
+            (screen_coords[0], screen_coords[1] + 3),
         )
 
     def _setUpCamera(self, planets):
