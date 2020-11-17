@@ -10,11 +10,11 @@ class Universe:
         assertType('planets', planets, list)
         assertType('planets element', planets[0], Planet)
         assertType('time step', dt, [int, float])
-        assertType('gravitational constant', gravConst, float)
+        assertType('gravitational constant', gravConst, [int, float])
 
         self.planets = planets
         self.dt = float(dt)
-        self.gravConst = gravConst
+        self.gravConst = float(gravConst)
 
     def stepTime(self):
         """Steps the simlation one time step"""
