@@ -4,7 +4,7 @@ from .vecN import Vec2
 
 
 WINDOW_TITLE = 'Planet Simmulation'
-MIN_SPACE = 50
+MIN_CAM_SIZE = 50
 PLANET_RADIUS = 10
 
 
@@ -48,7 +48,8 @@ class View():
             self._drawOrigin()
 
         # Draw all planets
-        for planet in universe.planets:
+        sorted_planets = sorted(universe.planets, key=lambda p: p.pos.z)
+        for planet in sorted_planets:
             self._drawPlanet(planet)
 
         pygame.display.update()
@@ -100,15 +101,15 @@ class View():
         max_y = max([p.pos.y for p in planets])
 
         self.camCenter = Vec2((max_x + min_x) / 2, (max_y + min_y) / 2)
-        self.camSize = (1.1 * (max_x - min_x), 1.1 * (max_y - min_y))
+        self.camSize = max(max_x - min_x, max_y - min_y, MIN_CAM_SIZE)
 
     def _posToScreenCoords(self, pos):
         """Translate the space position into the screen drawing coordinates"""
-        camLim_x = self.camCenter.x - self.camSize[0] / 2
-        camLim_y = self.camCenter.y - self.camSize[1] / 2
+        camLim_x = self.camCenter.x - self.camSize / 2
+        camLim_y = self.camCenter.y - self.camSize / 2
 
-        x = (self.screenSize[0] / self.camSize[0]) * (pos.x - camLim_x)
-        y = (self.screenSize[1] / self.camSize[1]) * (pos.y - camLim_y)
+        x = (self.screenSize[0] / self.camSize) * (pos.x - camLim_x)
+        y = (self.screenSize[1] / self.camSize) * (pos.y - camLim_y)
 
         # Invert orientation of y
         y = self.screenSize[1] - y
