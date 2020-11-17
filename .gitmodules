@@ -1,0 +1,3 @@
+[submodule "src/vecN"]
+	path = src/vecN
+	url = https://github.com/JoaoAPS/PythonVecN.git
