@@ -35,6 +35,24 @@ class View():
                 self.quit()
                 return
 
+        keys = pygame.key.get_pressed()
+
+        # Camera movement controls
+        if keys[pygame.K_a] or keys[pygame.K_LEFT] or keys[pygame.K_h]:
+            self._moveCamera(Vec2(-0.01 * self.camSize))
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT] or keys[pygame.K_l]:
+            self._moveCamera(Vec2(0.01 * self.camSize))
+        if keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_k]:
+            self._moveCamera(Vec2(0, 0.01 * self.camSize))
+        if keys[pygame.K_s] or keys[pygame.K_DOWN] or keys[pygame.K_j]:
+            self._moveCamera(Vec2(0, -0.01 * self.camSize))
+
+        # Camera zoom controls
+        if keys[pygame.K_q] or keys[pygame.K_i]:
+            self._zoomCamera(0.01 * self.camSize)
+        if keys[pygame.K_e] or keys[pygame.K_u]:
+            self._zoomCamera(-0.01 * self.camSize)
+
     def drawUniverse(self, universe):
         """Draw the current state of a universe"""
         if not self.camCenter:
@@ -139,6 +157,17 @@ class View():
 
         self.camCenter = Vec2((max_x + min_x) / 2, (max_y + min_y) / 2)
         self.camSize = max(max_x - min_x, max_y - min_y, MIN_CAM_SIZE)
+
+    def _moveCamera(self, displacement):
+        """Change the position of the camera"""
+        if type(displacement) is not Vec2:
+            displacement = Vec2(displacement)
+
+        self.camCenter += displacement
+
+    def _zoomCamera(self, sizeChange):
+        """Change the zoom level of the camera"""
+        self.camSize -= sizeChange
 
     def _posToScreenCoords(self, pos):
         """Translate the space position into the screen drawing coordinates"""
