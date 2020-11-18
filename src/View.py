@@ -67,6 +67,15 @@ class View():
         screen_y = max(screen_y, 0)
         screen_y = min(screen_y, self.screenSize[1])
 
+        # Draw trajectory
+        if len(planet.trajectory) > 1:
+            pygame.draw.lines(
+                self.screen,
+                (*planet.color, 10),
+                False,
+                [self._posToScreenCoords(point) for point in planet.trajectory]
+            )
+
         pygame.draw.circle(
             self.screen,
             planet.color,

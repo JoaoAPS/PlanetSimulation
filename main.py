@@ -6,9 +6,10 @@ from src.View import View
 from src.vecN import Vec3
 
 
-FPS = 30
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 400
+FPS = 60
+TIMESTEP = 0.01
 
 
 def main():
@@ -29,7 +30,7 @@ def main():
     #     Planet(m, Vec3(r), Vec3(0, -5), (200, 0, 200)),
     # ]
 
-    universe = Universe(planets, 0.1, gravConst=1)
+    universe = Universe(planets, TIMESTEP, gravConst=1)
 
     while v.running:
         clock.tick(FPS)
