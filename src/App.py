@@ -9,8 +9,8 @@ from .vecN import Vec3
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-FPS = 30
-TIMESTEP = 0.1
+FPS = 60
+TIMESTEP = 0.01
 
 
 class App:
@@ -102,7 +102,8 @@ class App:
                 if action.type == 'SELECT_PLANET':
                     self.selectedPlanet = action.payload
 
-                if action.type == 'SET_VEL' and self.selectedPlanet:
+                if action.type == 'SET_VEL' and \
+                        self.selectedPlanet is not None:
                     planets = self.universe.planets
                     drag = action.payload - planets[self.selectedPlanet].pos
 
