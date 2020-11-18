@@ -5,7 +5,7 @@ from .utils import assertType
 class Planet:
     """Represents a planet"""
 
-    def __init__(self, mass, pos, vel, color=(0, 0, 0)):
+    def __init__(self, mass, pos, vel, color=(0, 0, 0), radius=2):
         assertType('mass', mass, [float, int])
         assertType('position', pos, Vec3)
         assertType('velocity', vel, Vec3)
@@ -15,6 +15,7 @@ class Planet:
         self.vel = vel
         self.trajectory = []
         self.color = color
+        self.radius = radius
 
     def __str__(self):
         return f'Planet at ({self.pos.x}, {self.pos.y}, {self.pos.z})'

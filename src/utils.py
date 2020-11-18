@@ -10,4 +10,7 @@ def assertType(varName, var, correct_type):
         correct = type(var) is correct_type
 
     if not correct:
-        raise TypeError(varName + ' must be of type ' + str(correct_type))
+        raise TypeError(
+            varName + ' must be of type ' + str(correct_type) +
+            ', type' + str(type(var)) + ' was passed!'
+        )
