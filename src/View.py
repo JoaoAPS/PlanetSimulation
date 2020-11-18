@@ -4,7 +4,7 @@ from .vecN import Vec2, Vec3
 
 
 WINDOW_TITLE = 'Planet Simmulation'
-MIN_CAM_SIZE = 50
+MIN_CAM_SIZE = 160
 CONTROL_BAR_WIDTH = 150
 
 
