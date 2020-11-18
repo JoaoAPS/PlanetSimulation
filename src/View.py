@@ -66,8 +66,7 @@ class View():
         self._drawCenterOfMass(universe.planets)
 
         # Draw all planets
-        sorted_planets = sorted(universe.planets, key=lambda p: p.pos.z)
-        for planet in sorted_planets:
+        for planet in universe.planets:
             self._drawPlanet(planet)
 
         pygame.display.update()

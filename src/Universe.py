@@ -12,7 +12,7 @@ class Universe:
         assertType('time step', dt, [int, float])
         assertType('gravitational constant', gravConst, [int, float])
 
-        self.planets = planets
+        self.planets = sorted(planets, key=lambda p: p.pos.z)
         self.dt = float(dt)
         self.gravConst = float(gravConst)
 

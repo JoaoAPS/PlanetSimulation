@@ -9,7 +9,7 @@ from src.vecN import Vec3
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 400
 FPS = 60
-TIMESTEP = 0.01
+TIMESTEP = 0.05
 
 
 def main():
