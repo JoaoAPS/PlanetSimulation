@@ -51,6 +51,12 @@ class View():
                 if event.key == pygame.K_RETURN:
                     return Action('STOP')
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:
+                    self._zoomCamera(0.1 * self.camSize)
+                if event.button == 5:
+                    self._zoomCamera(-0.1 * self.camSize)
+
             if self.constructionMode:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
@@ -65,7 +71,7 @@ class View():
                                 return Action('REMOVE_PLANET', i)
 
                     # Add new planet
-                    if self._isInScreen(pos):
+                    if event.button == 1 and self._isInScreen(pos):
                         return Action('ADD_PLANET', {
                             'pos': Vec3(space_pos),
                             'vel': Vec3()
