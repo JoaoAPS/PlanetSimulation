@@ -23,6 +23,7 @@ class App:
         self.clock = pygame.time.Clock()
         self.runSimulation = False
         self.selectedPlanet = None
+        self.initialUniverse = None
 
     def run(self):
         """Run the application"""
@@ -33,7 +34,8 @@ class App:
                 self.pause = False
                 self._playSimulation()
 
-            self.universe = copy.copy(self.initialUniverse)
+            if self.initialUniverse:
+                self.universe = copy.copy(self.initialUniverse)
 
     def _playSimulation(self):
         """Simulate the orbits and show them on the screen"""
@@ -105,13 +107,13 @@ class App:
                     drag = action.payload - planets[self.selectedPlanet].pos
 
                     if abs(drag) > 1.2 * planets[self.selectedPlanet].radius:
-                        planets[self.selectedPlanet].vel = 0.5 * Vec3(drag)
+                        planets[self.selectedPlanet].vel = 0.667 * Vec3(drag)
                         self.universe.setPlanets(planets)
 
                         self.selectedPlanet = None
 
                 if action.type == 'REMOVE_PLANET':
-                    self.universe.removePlanet(self.selectedPlanet)
+                    self.universe.removePlanet(action.payload)
 
                 if action.type == 'START_SIMULATION' or action.type == 'STOP' \
                         or action.type == 'PAUSE':

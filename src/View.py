@@ -59,7 +59,10 @@ class View():
                     # Click on a planet
                     for i, p in enumerate(planets):
                         if abs(space_pos - p.pos) < 1.1 * p.radius:
-                            return Action('SELECT_PLANET', i)
+                            if event.button == 1:
+                                return Action('SELECT_PLANET', i)
+                            if event.button == 3:
+                                return Action('REMOVE_PLANET', i)
 
                     # Add new planet
                     if self._isInScreen(pos):
