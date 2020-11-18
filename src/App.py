@@ -1,4 +1,5 @@
 import pygame
+import copy
 
 from .Planet import Planet
 from .Universe import Universe
@@ -25,20 +26,36 @@ class App:
 
     def run(self):
         """Run the application"""
-        self._playUniverseContruction()
+        while self.view.running:
+            self._playUniverseContruction()
 
-        if self.runSimulation:
-            self._playSimulation()
+            if self.runSimulation:
+                self.pause = False
+                self._playSimulation()
+
+            self.universe = copy.copy(self.initialUniverse)
 
     def _playSimulation(self):
         """Simulate the orbits and show them on the screen"""
+        self.view.constructionMode = False
+        self.initialUniverse = copy.deepcopy(self.universe)
+
         while self.view.running:
             self.clock.tick(self.fps)
             self.view.drawUniverseSimulation(self.universe)
-            self.universe.stepTime()
+
+            if not self.pause:
+                self.universe.stepTime()
+
             action = self.view.handleEvents(self.universe.planets)
 
             if action:
+                if action.type == 'PAUSE':
+                    self.pause = not self.pause
+                if action.type == 'STOP':
+                    self.runSimulation = False
+                    return
+
                 if action.type == 'FPS_UP':
                     self.fps += 1
                 if action.type == 'FPS_DOWN':
@@ -57,9 +74,15 @@ class App:
             (250, 250, 10)
         ]
 
+        self.view.constructionMode = True
+
         while self.view.running and not self.runSimulation:
             self.clock.tick(self.fps)
-            self.view.drawUniverseConstruction(self.universe)
+            self.view.drawUniverseConstruction(
+                self.universe,
+                self.selectedPlanet
+            )
+
             action = self.view.handleEvents(self.universe.planets)
 
             if action:
@@ -102,5 +125,6 @@ class App:
 #                    )
 #                    self.universe.setPlanets(planets)
 
-                if action.type == 'START_SIMULATION':
+                if action.type == 'START_SIMULATION' or action.type == 'STOP' \
+                        or action.type == 'PAUSE':
                     self.runSimulation = True

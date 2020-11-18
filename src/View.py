@@ -46,6 +46,13 @@ class View():
                 self.quit()
                 return
 
+            if event.type == pygame.KEYDOWN:
+                # Stop control
+                if event.key == pygame.K_SPACE:
+                    return Action('PAUSE')
+                if event.key == pygame.K_RETURN:
+                    return Action('STOP')
+
             if self.constructionMode:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
@@ -98,10 +105,15 @@ class View():
         if keys[pygame.K_PERIOD]:
             return Action('FPS_UP')
 
-    def drawUniverseConstruction(self, universe):
+    def drawUniverseConstruction(self, universe, selected_planet):
         """Draw the universe construction GUI"""
-        self.constructionMode = True
         self.screenSize = self.screen.get_size()
+
+        # Background
+        self.screen.fill((0, 0, 0))
+
+        if selected_planet:
+            self._drawSelectionAura(universe.planets[selected_planet])
 
         self._drawUniverse(universe)
         self._drawControlBar()
@@ -110,8 +122,10 @@ class View():
 
     def drawUniverseSimulation(self, universe):
         """Draw the universe simulation GUI"""
-        self.constructionMode = False
         self.screenSize = self.screen.get_size()
+
+        # Background
+        self.screen.fill((0, 0, 0))
 
         self._drawUniverse(universe)
 
@@ -122,9 +136,6 @@ class View():
         if not self.camCenter:
             self._setUpCamera(universe.planets)
 
-        # Background
-        self.screen.fill((0, 0, 0))
-
         self._drawOrigin()
 
         self._drawCenterOfMass(universe.planets)
@@ -132,6 +143,18 @@ class View():
         # Draw all planets
         for planet in universe.planets:
             self._drawPlanet(planet)
+
+    def _drawSelectionAura(self, planet):
+        """Draw the halo that indicates a planet is selected"""
+        screen_x, screen_y = self._posToScreenCoords(planet.pos)
+        radius = (self.screenSize[0] / self.camSize) * planet.radius
+
+        pygame.draw.circle(
+            self.screen,
+            (200, 200, 50),
+            (screen_x, screen_y),
+            1.2 * radius
+        )
 
     def _drawPlanet(self, planet):
         """Draw a planet to the screen"""
