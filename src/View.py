@@ -32,8 +32,6 @@ class View():
         self.screen = pygame.display.set_mode(self.screenSize)
         pygame.display.set_caption(WINDOW_TITLE)
 
-        self.defRects()
-
     def quit(self):
         """Terminate the GUI and close window"""
         self.running = False
@@ -57,10 +55,6 @@ class View():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     space_pos = self._screenCoordsToPos(pos)
-
-                    # Click start button
-                    if self.startButton.collidepoint(pos):
-                        return Action('START_SIMULATION')
 
                     # Click on a planet
                     for i, p in enumerate(planets):
@@ -105,22 +99,7 @@ class View():
         if keys[pygame.K_PERIOD]:
             return Action('FPS_UP')
 
-    def drawUniverseConstruction(self, universe, selected_planet):
-        """Draw the universe construction GUI"""
-        self.screenSize = self.screen.get_size()
-
-        # Background
-        self.screen.fill((0, 0, 0))
-
-        if selected_planet:
-            self._drawSelectionAura(universe.planets[selected_planet])
-
-        self._drawUniverse(universe)
-        self._drawControlBar()
-
-        pygame.display.update()
-
-    def drawUniverseSimulation(self, universe):
+    def drawUniverse(self, universe):
         """Draw the universe simulation GUI"""
         self.screenSize = self.screen.get_size()
 
@@ -144,31 +123,18 @@ class View():
         for planet in universe.planets:
             self._drawPlanet(planet)
 
-    def _drawSelectionAura(self, planet):
-        """Draw the halo that indicates a planet is selected"""
-        screen_x, screen_y = self._posToScreenCoords(planet.pos)
-        radius = (self.screenSize[0] / self.camSize) * planet.radius
-
-        pygame.draw.circle(
-            self.screen,
-            (200, 200, 50),
-            (screen_x, screen_y),
-            1.2 * radius
-        )
-
     def _drawPlanet(self, planet):
         """Draw a planet to the screen"""
         screen_x, screen_y = self._posToScreenCoords(planet.pos)
-        boardSize = self._getDrawingBoardSize()
         radius = (self.screenSize[0] / self.camSize) * planet.radius
 
         if not self._isInScreen((screen_x, screen_y)):
             radius /= 2
 
         screen_x = max(screen_x, 0)
-        screen_x = min(screen_x, boardSize[0])
+        screen_x = min(screen_x, self.screenSize[0])
         screen_y = max(screen_y, 0)
-        screen_y = min(screen_y, boardSize[1])
+        screen_y = min(screen_y, self.screenSize[1])
 
         # Draw trajectory
         if len(planet.trajectory) > 1:
@@ -244,20 +210,6 @@ class View():
             (screen_coords[0], screen_coords[1] + 3),
         )
 
-    def _drawControlBar(self):
-        """Draw the control bar"""
-
-        # Background
-        pygame.draw.rect(self.screen, (20, 20, 20), self.controlBar)
-        pygame.draw.line(
-            self.screen,
-            (50, 50, 50),
-            (self.screenSize[0] - CONTROL_BAR_WIDTH, 0),
-            (self.screenSize[0] - CONTROL_BAR_WIDTH, self.screenSize[1]),
-        )
-
-        pygame.draw.rect(self.screen, (40, 200, 40), self.startButton)
-
     def _setUpCamera(self, planets):
         """Set the starting position of the camera"""
 
@@ -286,73 +238,40 @@ class View():
         """Change the zoom level of the camera"""
         self.camSize -= sizeChange
 
-    def _getDrawingBoardSize(self):
-        """Return the width and height of the drawing board"""
-        if self.constructionMode:
-            return (self.screenSize[0] - CONTROL_BAR_WIDTH, self.screenSize[1])
-        return self.screenSize
-
     def _posToScreenCoords(self, pos):
         """Translate the space position into the screen drawing coordinates"""
-        boardSize = self._getDrawingBoardSize()
-
         camLim_x = self.camCenter.x - self.camSize / 2
         camLim_y = self.camCenter.y - self.camSize / 2
 
-        x = (boardSize[0] / self.camSize) * (pos.x - camLim_x)
-        y = (boardSize[1] / self.camSize) * (pos.y - camLim_y)
+        x = (self.screenSize[0] / self.camSize) * (pos.x - camLim_x)
+        y = (self.screenSize[1] / self.camSize) * (pos.y - camLim_y)
 
         # Invert orientation of y
-        y = boardSize[1] - y
+        y = self.screenSize[1] - y
 
         return int(x), int(y)
 
     def _screenCoordsToPos(self, coords):
-        boardSize = self._getDrawingBoardSize()
-
         # Invert orientation of y
-        coord_y = boardSize[1] - coords[1]
+        coord_y = self.screenSize[1] - coords[1]
 
         camLim_x = self.camCenter.x - self.camSize / 2
         camLim_y = self.camCenter.y - self.camSize / 2
 
-        x = camLim_x + (self.camSize / boardSize[0]) * coords[0]
-        y = camLim_y + (self.camSize / boardSize[1]) * coord_y
+        x = camLim_x + (self.camSize / self.screenSize[0]) * coords[0]
+        y = camLim_y + (self.camSize / self.screenSize[1]) * coord_y
 
         return Vec2(x, y)
 
     def _isInScreen(self, pos):
         """Return True if coordinate is in  the bounds of the screen"""
-        boardSize = self._getDrawingBoardSize()
-
         if type(pos) is Vec2:
-            return pos.y >= 0 and pos.y <= boardSize[1] and pos.x >= 0 \
-                and pos.x <= boardSize[0]
+            return pos.y >= 0 and pos.y <= self.screenSize[1] and pos.x >= 0 \
+                and pos.x <= self.screenSize[0]
 
-        return pos[1] >= 0 and pos[1] <= boardSize[1] and pos[0] >= 0 \
-            and pos[0] <= boardSize[0]
+        return pos[1] >= 0 and pos[1] <= self.screenSize[1] and pos[0] >= 0 \
+            and pos[0] <= self.screenSize[0]
 
     def _isInCamera(self, pos):
         """Return True if position is inside camera field of view"""
         return self._isInScreen(self._posToScreenCoords(pos))
-
-    def defRects(self):
-        """Define the position of the Rects used for the control bar"""
-        barLeft = self.screenSize[0] - CONTROL_BAR_WIDTH
-        barBottom = self.screenSize[1]
-
-        self.controlBar = pygame.Rect(
-            barLeft,
-            0,
-            CONTROL_BAR_WIDTH,
-            self.screenSize[1]
-        )
-
-        padding = 10
-        height = 50
-        self.startButton = pygame.Rect(
-            barLeft + padding,
-            barBottom - height - padding,
-            CONTROL_BAR_WIDTH - 2 * padding,
-            height
-        )

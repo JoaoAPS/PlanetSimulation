@@ -42,7 +42,7 @@ class App:
 
         while self.view.running:
             self.clock.tick(self.fps)
-            self.view.drawUniverseSimulation(self.universe)
+            self.view.drawUniverse(self.universe)
 
             if not self.pause:
                 self.universe.stepTime()
@@ -78,10 +78,7 @@ class App:
 
         while self.view.running and not self.runSimulation:
             self.clock.tick(self.fps)
-            self.view.drawUniverseConstruction(
-                self.universe,
-                self.selectedPlanet
-            )
+            self.view.drawUniverse(self.universe)
 
             action = self.view.handleEvents(self.universe.planets)
 
@@ -115,15 +112,6 @@ class App:
 
                 if action.type == 'REMOVE_PLANET':
                     self.universe.removePlanet(self.selectedPlanet)
-
-#                if action.type == 'UPDATE_PLANET':
-#                    planets = self.universe.planets
-#                    planets[action.payload['idx_planet']] = Planet(
-#                        action.payload['pos'],
-#                        action.payload['vel'],
-#                        planets[action.payload['idx_planet'].color]
-#                    )
-#                    self.universe.setPlanets(planets)
 
                 if action.type == 'START_SIMULATION' or action.type == 'STOP' \
                         or action.type == 'PAUSE':
