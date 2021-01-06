@@ -4,9 +4,14 @@ Planets Simulator
 Simulation and visualization of a group of planets evolving in time following the
 Newton gravitational law.
 
-## Usage
+## Instalations
 
-With dependencies installed run `python main.py`
+1. Git clone the repository
+2. cd into it and run `git submodule init && git submodule update`
+3. Install the dependencies: `pip install -r requirements.txt`
+3. Run `python main.py`
+
+## Usage
 
 Move the camera with "wasd" keys, arrow keys, or vim-like keys.
 Press `q` or `i` to zoom in, and `e` or `u` to zoom out.
